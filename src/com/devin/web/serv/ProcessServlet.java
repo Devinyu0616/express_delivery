@@ -178,32 +178,49 @@ public class ProcessServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-    private void  deliveryList(HttpServletRequest request, HttpServletResponse response){
+    private void deliveryList(HttpServletRequest request, HttpServletResponse response) {
         try {
-            //查询当前登录用户的userId对应的快递记录
+            // 查询当前登录用户的userId对应的快递记录
             User sysUser = (User) request.getSession().getAttribute("user");
+            System.out.println("当前登录用户: " + (sysUser != null ? sysUser.toString() : "未登录"));
+
             List<Delivery> allDelivery = deliveryService.getAllDeliveryByUserId(sysUser.getId());
-
-            //查询现有的所有快递公司
-            List<Company> list = companyService.getAllCompany();
-            //把所有快递公司的list集合，转为Map，key是company的id，value是company的name
-            /*Map<Integer, String> map = list.stream().collect(Collectors.toMap(c -> c.getId(), c -> c.getCompanyName()));
-            for (SysDelivery sysDelivery : allDelivery) {
-                Integer companyId = sysDelivery.getCompanyId();
-                Company company = new Company(companyId, map.get(companyId));
-                sysDelivery.setCompany(company);
-            }*/
-            //key是快递公司的id，value是快递公司对象
-            Map<Integer, Company> map = list.stream().collect(Collectors.toMap(Company::getId, c -> c));
-            for (Delivery sysDelivery : allDelivery) {
-                sysDelivery.setCompany(map.get(sysDelivery.getCompanyId()));
-                System.out.println("======="+map.get(sysDelivery.getCompanyId()));
+            System.out.println("根据用户ID " + sysUser.getId() + " 查询到的快递记录数量: " + allDelivery.size());
+            // 打印所有快递记录的详细信息
+            for (Delivery delivery : allDelivery) {
+                System.out.println("快递记录: " + delivery.toString());
             }
-            //测试打印
 
+            // 查询现有的所有快递公司
+            List<Company> list = companyService.getAllCompany();
+            System.out.println("查询到的快递公司数量: " + list.size());
+            // 打印所有快递公司信息
+            for (Company company : list) {
+                System.out.println("快递公司: " + company.toString());
+            }
+
+            // 把所有快递公司的list集合，转为Map，key是company的id，value是company对象
+            Map<Integer, Company> map = list.stream().collect(Collectors.toMap(Company::getId, c -> c));
+            System.out.println("快递公司Map大小: " + map.size());
+            // 打印Map中的键值对
+            map.forEach((id, company) -> System.out.println("Map Entry - ID: " + id + ", Company: " + company.toString()));
+
+            // 为每条快递记录设置对应的公司对象并调试输出
+            for (Delivery sysDelivery : allDelivery) {
+                Company company = map.get(sysDelivery.getCompanyId());
+                sysDelivery.setCompany(company);
+                System.out.println("为快递记录 [ID: " + sysDelivery.getId() + "] 设置公司: " +
+                        (company != null ? company.toString() : "未找到对应公司, CompanyId: " + sysDelivery.getCompanyId()));
+            }
+
+            // 将数据存入request并转发
             request.setAttribute("allDelivery", allDelivery);
-            request.getRequestDispatcher("/list.jsp").forward(request,response);
+            System.out.println("将快递记录列表存入request，准备转发到 /list.jsp");
+            request.getRequestDispatcher("/list.jsp").forward(request, response);
+            System.out.println("转发到 /list.jsp 完成");
+
         } catch (Exception e) {
+            System.err.println("发生异常: " + e.getMessage());
             e.printStackTrace();
         }
     }
