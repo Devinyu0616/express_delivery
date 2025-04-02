@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--<%@ taglib prefix="c" uri="jakarta.tags.core" %>--%>
+<base href="/myweb/" />
 <div id="dcHead">
     <div id="head">
         <div class="logo"><a href="index.jsp">
@@ -14,7 +15,7 @@
                         <a href="password.jsp">修改密码</a>
                     </div>
                 </li>
-                <li class="noRight"><a href="login?method=logout">退出</a></li>
+                <li class="noRight"><a href="api/logout">退出</a></li>
             </ul>
         </div>
     </div>

@@ -1,5 +1,6 @@
 package com.devin.web.serv;
 
+import com.alibaba.druid.sql.parser.SQLParserUtils;
 import com.devin.web.bean.User;
 import com.devin.web.service.ServerImple;
 import com.devin.web.util.MD5Util;
@@ -20,9 +21,7 @@ public class ProcessServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Map<String, String[]> parameterMap = req.getParameterMap();
 //        System.out.println("------------------");
-        if(parameterMap.isEmpty()){
-            resp.sendError(404);
-        }
+
         String pathInfo = req.getPathInfo();
         System.out.println(pathInfo);
 //        if(pathInfo.contains("&")){
@@ -35,6 +34,15 @@ public class ProcessServlet extends HttpServlet {
 //                    System.out.println("req,resp,parameterMap");
                     login(req,resp,parameterMap);
                 } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case "/logout"->{
+                try {
+//                    System.out.println("req,resp,parameterMap");
+                    logout(req,resp);
+                } catch (Exception e) {
+                    System.out.println("logout出错了");
                     throw new RuntimeException(e);
                 }
             }
@@ -101,7 +109,7 @@ public class ProcessServlet extends HttpServlet {
     private void logout(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         req.getSession().invalidate();
 //        req.getSession().removeAttribute("user");     也可以这样删除
-        resp.sendRedirect("login.jsp");
+        resp.sendRedirect(getServletContext().getContextPath()+"/login.jsp");
     }
     private void updatePwd(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> pm) throws Exception {
         System.out.println("update开始执行");
