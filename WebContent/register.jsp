@@ -71,6 +71,7 @@
           }
         }
         //设置请求路径和请求方式
+        // TODO >>> 请求路径错了
         xmlhttp.open("GET","user?method=checkUsername&username="+ username ,true);
         //发生请求
         xmlhttp.send();
@@ -144,7 +145,7 @@
         <div id="manager" class="mainBox" style="height: auto !important; height: 550px; min-height: 550px">
           <h3>新用户注册</h3>
           <!-- 提交表单事件onsubmit触发时，必须调用函数来确保用户名、新密码、确认密码校验状态都为true，才能提交。-->
-          <form action="api/user" method="post" onsubmit="return checkForm()">
+          <form action="api/register" method="post" onsubmit="return checkForm()">
             <!--如果隐藏域method的value值是register，那么UserServlet中会调用register方法来处理注册的请求-->
             <input type="hidden" name="method" value="register" />
             <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">

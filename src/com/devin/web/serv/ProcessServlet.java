@@ -68,10 +68,22 @@ public class ProcessServlet extends HttpServlet {
             case "/checkUsername" ->checkUsername(req,resp,parameterMap);
             case "/checkPassword" ->checkPassword(req,resp,parameterMap);
             case "/checkOldPassword"->checkPassword(req,resp,parameterMap);
-            case "/deliveryList" ->{deliveryList(req,resp);
-            }
+            case "/deliveryList" ->{deliveryList(req,resp);            }
+            case "/deliveryPrepareAdd" ->{deliveryPrepareAdd(req,resp);            }
 
             default -> resp.sendError(404);
+        }
+    }
+
+    private void deliveryPrepareAdd(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            //进入添加页面之前，要查询现有的所有快递公司
+            List<Company> list = companyService.getAllCompany();
+            req.setAttribute("allCompany", list);
+            //跳转到添加页面add.jsp
+            req.getRequestDispatcher("/add.jsp").forward(req,resp);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

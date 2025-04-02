@@ -94,7 +94,7 @@
                 <td></td>
                 <td>
                   <input type="submit" class="btn" value="登录" /> &nbsp; &nbsp; 
-                  <span style="font-weight: bolder;text-decoration: underline solid;"><a href="register.html">注&nbsp;册</a></span>
+                  <span style="font-weight: bolder;text-decoration: underline solid;"><a href="register.jsp">注&nbsp;册</a></span>
                   &nbsp;&nbsp;&nbsp;
                   <span style="color:red;">${msg}</span>
                 </td>

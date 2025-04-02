@@ -50,7 +50,8 @@
                 <div id="urHere">快递管理系统<b>></b><strong>快递列表</strong> </div>
                 <div class="mainBox"
                     style="height:auto!important;height:550px;min-height:550px;">
-                    <h3><a href="delivery?method=prepareAdd" class="actionBtn add">添加快递</a>快递列表</h3>
+<%--                    <h3><a href="delivery?method=prepareAdd" class="actionBtn add">添加快递</a>快递列表</h3>--%>
+                    <h3><a href="api/deliveryPrepareAdd" class="actionBtn add">添加快递</a>快递列表</h3>
                     <div id="list">
 
                         <table width="100%" border="0" cellpadding="8"
