@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,13 +71,52 @@ public class ProcessServlet extends HttpServlet {
             case "/checkPassword" ->checkPassword(req,resp,parameterMap);
             case "/checkOldPassword"->checkPassword(req,resp,parameterMap);
             case "/deliveryList" ->{deliveryList(req,resp);            }
-            case "/deliveryPrepareAdd" ->{deliveryPrepareAdd(req,resp);            }
-
+            case "/deliveryPrepareAdd" ->{deliveryPrepareAdd(req,resp,parameterMap);            }
+            case "/deliveryAdd" ->deliveryAdd(req,resp,parameterMap);
             default -> resp.sendError(404);
         }
     }
 
-    private void deliveryPrepareAdd(HttpServletRequest req, HttpServletResponse resp) {
+          private void deliveryAdd(HttpServletRequest request, HttpServletResponse response,Map<String, String[]> pm) throws ServletException, IOException {
+            Delivery sysDelivery = null;
+            try {
+                String deliveryName = pm.get("deliveryName")[0];
+                Integer companyId = Integer.parseInt(pm.get("companyId")[0]);
+                String phone = pm.get("phone")[0];
+                String address = pm.get("address")[0];
+
+                String sendTimeStr = pm.get("sendTime")[0];
+                SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+                Date sendTime = sf.parse(sendTimeStr);
+
+                Integer state = Integer.parseInt(pm.get("state")[0]);
+
+                User sysUser = (User) request.getSession().getAttribute("user");
+                //这里填写0，是因为DAO层不用id值，id是自增的
+                sysDelivery = new Delivery(0,deliveryName,sysUser.getId(),companyId,phone,address,sendTime,state,null);
+                System.out.println("创建的订单信息-----"+sysDelivery.toString());
+                boolean flag = deliveryService.saveDelivery(sysDelivery);
+                if(flag){
+                    //跳转到列表页
+                    request.getRequestDispatcher("api/deliveryList").forward(request,response);
+                }
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                //失败，跳转会添加页面
+                List<Company> list = companyService.getAllCompany();
+                request.setAttribute("allCompany", list);
+                request.setAttribute("sysDelivery",sysDelivery);
+                request.getRequestDispatcher("/deliveryAdd").forward(request,response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    private void deliveryPrepareAdd(HttpServletRequest req, HttpServletResponse resp,Map<String, String[]> mp) {
         try {
             //进入添加页面之前，要查询现有的所有快递公司
             List<Company> list = companyService.getAllCompany();

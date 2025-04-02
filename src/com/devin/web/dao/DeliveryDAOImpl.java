@@ -7,13 +7,13 @@ import java.util.List;
 public class DeliveryDAOImpl implements DeliveryDAOInterface{
     @Override
     public int addDelivery(Delivery delivery) throws Exception {
-        String sql = "insert into delivery (delivery_name, user_id, company_id, phone, " +
-                                                 "address, send_time,state) values(?,?,?,?,?,?,?)";
+        String sql = "insert into sys_delivery (delivery_name, user_id, company_id, phone,address, send_time,state) values(?,?,?,?,?,?,?)";
         return BaseDAOPlus.update(sql,
                 delivery.getDeliveryName(),
                 delivery.getUserId(),
                 delivery.getCompanyId(),
                 delivery.getPhone(),
+                delivery.getAddress(),
                 delivery.getSendTime(),
                 delivery.getState()
         );

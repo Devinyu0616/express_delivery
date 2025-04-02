@@ -20,7 +20,7 @@
                     id="manager" class="mainBox"
                     style="height:auto!important;height:550px;min-height:550px;">
                     <h3><a href="index.jsp" class="actionBtn">返回首页</a>添加快递</h3>
-                    <form action="delivery" method="post">
+                    <form action="api/deliveryAdd" method="post">
                         <input type="hidden" name="method" value="add" />
                         <table width="100%" border="0" cellpadding="8"
                             cellspacing="0" class="tableBasic">
