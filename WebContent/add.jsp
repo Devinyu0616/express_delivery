@@ -3,7 +3,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <base href=""><base href="/myweb/" />
+
+        <base href="/myweb/" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>快递管理系统</title>
         <jsp:include page="resource.jsp" />
