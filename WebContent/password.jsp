@@ -32,13 +32,14 @@
               oldPwdMsg.innerHTML="<font color='red'>原密码格式错误!</font>"
               oldPwdState = false;
               return;
-          } 
+          }
+        oldPwdState = true;
 
           // 格式OK时,旧密码校验状态为true,并在旧密码格式提示的框中用绿色字样提示:原密码格式正确!
          /* oldPwdMsg.innerHTML="<font color='green'>原密码格式正确!</font>"
           oldPwdState = true;*/
         //格式正确之后，调用AJAX去服务器端检查旧密码是否正确
-        checkOldPasswordCorrect(oldPwdMsg,oldPwd);
+        // checkOldPasswordCorrect(oldPwdMsg,oldPwd);
       }
 
       function checkOldPasswordCorrect(oldPwdMsg,oldPwd){
@@ -147,7 +148,7 @@
         <div id="manager" class="mainBox" style="height:auto!important;height:550px;min-height:550px;">
           <h3><a href="index.jsp" class="actionBtn">返回首页</a>修改密码</h3>
           <!-- 提交表单事件onsubmit触发时，必须调用函数来确保旧密码、新密码、确认密码校验状态都为true，才能提交。-->
-          <form action="api/user" method="post" onsubmit="return checkForm()">
+          <form action="api/updatePwd" method="post" onsubmit="return checkForm()">
             <input type="hidden" name="method" value="updatePassword" />
             <table width="100%" border="0" cellpadding="8" cellspacing="0" class="tableBasic">
               <tr>
@@ -180,6 +181,7 @@
               <tr>
                 <td></td>
                 <td>
+<%--                  <span id="newPwdMsg"></span>--%>
                   <input type="submit" name="submit" class="btn" value="提交" />
                 </td>
               </tr>
