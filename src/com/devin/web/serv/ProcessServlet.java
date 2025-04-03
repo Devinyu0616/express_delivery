@@ -92,13 +92,17 @@ public class ProcessServlet extends HttpServlet {
                 Integer state = Integer.parseInt(pm.get("state")[0]);
 
                 User sysUser = (User) request.getSession().getAttribute("user");
+                System.out.println("调试信息sysUser = "+sysUser);
                 //这里填写0，是因为DAO层不用id值，id是自增的
                 sysDelivery = new Delivery(0,deliveryName,sysUser.getId(),companyId,phone,address,sendTime,state,null);
                 System.out.println("创建的订单信息-----"+sysDelivery.toString());
                 boolean flag = deliveryService.saveDelivery(sysDelivery);
                 if(flag){
                     //跳转到列表页
-                    request.getRequestDispatcher("api/deliveryList").forward(request,response);
+                    //跳转页面
+                    System.out.println("跳转页面到/deliveryList");
+//                    request.getRequestDispatcher(getServletContext().getContextPath()+"/deliveryList").forward(request,response);
+                    request.getRequestDispatcher("/api/deliveryList").forward(request, response);
                 }
                 return;
             } catch (Exception e) {
