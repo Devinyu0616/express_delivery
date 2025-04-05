@@ -188,6 +188,8 @@
                 <td></td>
                 <td>
                   <input type="submit" class="btn" value="注册" />
+                  &nbsp;&nbsp;&nbsp;
+                  <span style="color:red;">${msg}</span>
                 </td>
               </tr>
             </table>

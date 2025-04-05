@@ -4,4 +4,4 @@
 <link href="css/public.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/global.js"></script>
-<script type="text/javascript" src="js/jquery.autotextarea.js"></script>
+<script type="text/javascript" src="js/jquery.autoTextarea.js"></script>

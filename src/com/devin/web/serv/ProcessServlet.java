@@ -1,6 +1,5 @@
 package com.devin.web.serv;
 
-import com.alibaba.druid.sql.parser.SQLParserUtils;
 import com.devin.web.bean.Company;
 import com.devin.web.bean.Delivery;
 import com.devin.web.bean.User;
@@ -70,14 +69,105 @@ public class ProcessServlet extends HttpServlet {
             case "/checkUsername" ->checkUsername(req,resp,parameterMap);
             case "/checkPassword" ->checkPassword(req,resp,parameterMap);
             case "/checkOldPassword"->checkPassword(req,resp,parameterMap);
-            case "/deliveryList" ->{deliveryList(req,resp);            }
+//            case "/deliveryList" ->{deliveryList(req,resp);            }
+            case "/deliveryList" ->{list(req,resp);            }
+
             case "/deliveryPrepareAdd" ->{deliveryPrepareAdd(req,resp,parameterMap);            }
             case "/deliveryAdd" ->deliveryAdd(req,resp,parameterMap);
-            default -> resp.sendError(404);
+            case "/deliveryRemove"->deliveryRemove(req,resp,parameterMap);
+            case "/deliveryEdit" ->{deliveryEdit(req,resp,parameterMap);
+                }
+            case "/deliveryBeforeUpdate"->{
+                deliveryBeforeUpdate(req,resp,parameterMap);
+            }
+            case "/List"->{ list(req,resp);
+            }
+            default -> {
+                resp.sendError(404);
+                System.out.println("进入到default分支");
+            }
         }
     }
 
-          private void deliveryAdd(HttpServletRequest request, HttpServletResponse response,Map<String, String[]> pm) throws ServletException, IOException {
+    private void deliveryBeforeUpdate(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> parameterMap) {
+        try {
+            String id = request.getParameter("id");
+            Delivery delivery = deliveryService.getDetail(id);
+            List<Company> companyList = companyService.getAllCompany();
+            request.setAttribute("companyList",companyList);
+            request.setAttribute("delivery",delivery);
+            request.getRequestDispatcher("/edit.jsp").forward(request,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deliveryEdit(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> parameterMap) {
+        try {
+            Delivery delivery = new Delivery();
+            delivery.setId(Integer.parseInt(request.getParameter("id")));
+            delivery.setDeliveryName(request.getParameter("deliveryName"));
+            User sysUser = (User) request.getSession().getAttribute("user");
+            delivery.setUserId(sysUser.getId());
+            delivery.setCompanyId(Integer.parseInt(request.getParameter("companyId")));
+            delivery.setPhone(request.getParameter("phone"));
+            delivery.setAddress(request.getParameter("address"));
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+            delivery.setSendTime(sf.parse(request.getParameter("sendTime")));
+            delivery.setState(Integer.parseInt(request.getParameter("state")));
+
+            deliveryService.updateDelivery(delivery);
+            request.getRequestDispatcher("/api/deliveryList").forward(request,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void list(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            String currentPageStr = request.getParameter("currentPage");
+            String pageCountStr = request.getParameter("pageCount");
+            int currentPage = currentPageStr == null ? 1 : Integer.parseInt(currentPageStr);
+            int pageCount = pageCountStr == null  ? 5 : Integer.parseInt(pageCountStr);
+            User sysUser = (User) request.getSession().getAttribute("user");
+            long totalCount = deliveryService.getTotal(sysUser.getId());
+
+            int lastPage = (int) (totalCount % pageCount==0? totalCount / pageCount: totalCount / pageCount+1);
+            if(currentPage>lastPage && totalCount!=0){
+                currentPage=lastPage;
+            }
+            List<Delivery> deliveries = deliveryService.findList(sysUser.getId(), currentPage, pageCount);
+
+            List<Company> companyList = companyService.getAllCompany();
+            Map<Integer, Company> map = companyList.stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
+            for (Delivery delivery : deliveries) {
+                delivery.setCompany(map.get(delivery.getCompanyId()));
+            }
+
+            request.setAttribute("deliveries",deliveries);
+            request.setAttribute("currentPage",currentPage);
+            request.setAttribute("pageCount",pageCount);
+            request.setAttribute("lastPage",lastPage);
+
+            request.getRequestDispatcher("/list.jsp").forward(request,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void deliveryRemove(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> parameterMap) {
+        try {
+            String id = request.getParameter("id");
+            boolean flag = deliveryService.deleteDelivery(Integer.parseInt(id));
+            if(flag){
+                response.getWriter().write("true");
+            }else{
+                response.getWriter().write("false");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deliveryAdd(HttpServletRequest request, HttpServletResponse response,Map<String, String[]> pm) throws ServletException, IOException {
             Delivery sysDelivery = null;
             try {
                 String deliveryName = pm.get("deliveryName")[0];
@@ -136,7 +226,14 @@ public class ProcessServlet extends HttpServlet {
 
     if (pm.containsKey("username") && pm.containsKey("password")&&pm.containsKey("nickname")&&pm.containsKey("rePassword")){
 
-        serverProcess.addUser(new User(pm.get("username")[0],pm.get("password")[0],pm.get("nickname")[0]));
+        boolean f = serverProcess.addUser(new User(pm.get("username")[0],pm.get("password")[0],pm.get("nickname")[0]));
+            if(f){
+                resp.sendRedirect(getServletContext().getContextPath()+"/login.jsp");
+            }else {
+                req.setAttribute("msg","Register Failed"); //
+                req.getRequestDispatcher("/register.jsp" +
+                        "").forward(req, resp);
+            }
          }
     }
     //登录处理方法
@@ -164,7 +261,7 @@ public class ProcessServlet extends HttpServlet {
         }else{
             //登录失败，返回提示信息
                 req.setAttribute("msg","Login Failed"); //
-                req.getRequestDispatcher("login.jsp").forward(req, resp);
+                req.getRequestDispatcher("/login.jsp").forward(req, resp);
         }
 
     }

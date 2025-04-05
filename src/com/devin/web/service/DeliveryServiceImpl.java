@@ -40,6 +40,18 @@ public class DeliveryServiceImpl implements DeliveryService{
         JDBCToolsPlus.freeConnection();
         return Delivery;
     }
+    @Override
+    public Delivery getDetail(String id) throws Exception {
+        Delivery delivery = deliveryDAO.queryById(Integer.parseInt(id));
+        JDBCToolsPlus.freeConnection();
+        return delivery;
+    }
+    @Override
+    public long getTotal(Integer userId) throws Exception {
+        long count = deliveryDAO.count(userId);
+        JDBCToolsPlus.freeConnection();
+        return count;
+    }
 
     //根据userId查询该用户发的所有快递记录
     @Override
@@ -48,4 +60,19 @@ public class DeliveryServiceImpl implements DeliveryService{
         JDBCToolsPlus.freeConnection();
         return list;
     }
+    //查询当前登录用户的所有快递记录
+    @Override
+    public List<Delivery> findList(Integer userId) throws Exception {
+        List<Delivery> list = deliveryDAO.queryByUserId(userId);
+        JDBCToolsPlus.freeConnection();
+        return list;
+    }
+    //分页查询当前登录用户的所有快递记录
+    @Override
+    public List<Delivery> findList(Integer userId, int page, int pageCount) throws Exception {
+        List<Delivery> list = deliveryDAO.queryByUserId(userId, page, pageCount);
+        JDBCToolsPlus.freeConnection();
+        return list;
+    }
+
 }
